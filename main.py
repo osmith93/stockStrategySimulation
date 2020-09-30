@@ -100,13 +100,13 @@ def applyStrategy(strategy, stock_history):
         strategy.next_day(stock_history[:t + 1])
 
 
-#timestamps, stock_history = generate_stock_history()
-timestamps, stock_history = read_stock_history()
+timestamps, stock_history = generate_stock_history()
+#timestamps, stock_history = read_stock_history()
 
 
 noStrategy = Strategy()
 benchmarkStrategy = BenchmarkStrategy()
-modifiedStrategy = ModifiedStrategy(threshhold=0.95)
+modifiedStrategy = ModifiedStrategy(threshhold=0.9)
 
 applyStrategy(benchmarkStrategy, stock_history)
 applyStrategy(modifiedStrategy, stock_history)
