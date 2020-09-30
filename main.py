@@ -106,14 +106,14 @@ timestamps, stock_history = generate_stock_history()
 
 noStrategy = Strategy()
 benchmarkStrategy = BenchmarkStrategy()
-modifiedStrategy = ModifiedStrategy(threshhold=0.9)
+modifiedStrategy = ModifiedStrategy(threshhold=0.98)
 
 applyStrategy(benchmarkStrategy, stock_history)
 applyStrategy(modifiedStrategy, stock_history)
 applyStrategy(noStrategy, stock_history)
 
 print(f"The benchmark strategy yielded {benchmarkStrategy.value_history(stock_history)[-1]}.")
-print(f"The modified strategy yielded {modifiedStrategy.value_history(stock_history)[-1]}.")
+print(f"The modified strategy yielded {modifiedStrategy.value_history(stock_history)[-1]} ({modifiedStrategy.cash[-1]} in cash).")
 
 fig, ax = plt.subplots(1, 3)
 ax[0].plot(stock_history)
@@ -121,6 +121,7 @@ ax[0].set_title("Stock price")
 ax[1].plot(benchmarkStrategy.value_history(stock_history))
 ax[1].set_title("Benchmark strategy")
 ax[2].plot(modifiedStrategy.value_history(stock_history))
+ax[2].plot(modifiedStrategy.cash)
 ax[2].set_title("Modified strategy")
 
 fig.show()
