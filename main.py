@@ -1,7 +1,7 @@
 import random
 import matplotlib.pyplot as plt
 import numpy as np
-
+import csv
 
 class Strategy:
     def __init__(self, savings_per_block=100, pay_period=10):
@@ -42,13 +42,15 @@ class Strategy:
         self.today += 1
 
     def value_history(self, stock_history):
-        return [current_cash + current_shares * current_stock_price for current_cash, current_shares, current_stock_price in
+        return [current_cash + current_shares * current_stock_price for
+                current_cash, current_shares, current_stock_price in
                 zip(self.cash[1:], self.shares[1:], stock_history)]
 
 
 class BenchmarkStrategy(Strategy):
     def i_will_buy_shares(self, stock_history):
         return True
+
 
 class ModifiedStrategy(Strategy):
     def __init__(self, threshhold=0.9):
@@ -64,8 +66,6 @@ class ModifiedStrategy(Strategy):
         return False
 
 
-
-
 def generate_stock_history(n=10000):
     def next_step(now, tendency=1e-5, volatility=100):
         return now * (1 + tendency * random.normalvariate(1, volatility))
@@ -78,17 +78,35 @@ def generate_stock_history(n=10000):
     return timestamps, stock_history
 
 
+def read_stock_history(filename="GDAXI.csv", column_name="Open"):
+    stock_history = []
+    with open(filename) as file:
+        reader = csv.reader(file)
+        for i, row in enumerate(reader):
+            if i == 0:
+                column_id = row.index(column_name)
+            else:
+                if row[column_id] != 'null':
+                    stock_history.append(float(row[column_id]))
+                else:
+                    stock_history.append(stock_history[-1])
+    timestamps = range(len(stock_history))
+    return timestamps, stock_history
+
+
 def applyStrategy(strategy, stock_history):
     timestamps = range(len(stock_history))
     for t in timestamps:
         strategy.next_day(stock_history[:t + 1])
 
 
-timestamps, stock_history = generate_stock_history()
+#timestamps, stock_history = generate_stock_history()
+timestamps, stock_history = read_stock_history()
+
 
 noStrategy = Strategy()
 benchmarkStrategy = BenchmarkStrategy()
-modifiedStrategy = ModifiedStrategy(threshhold=0.99)
+modifiedStrategy = ModifiedStrategy(threshhold=0.95)
 
 applyStrategy(benchmarkStrategy, stock_history)
 applyStrategy(modifiedStrategy, stock_history)
